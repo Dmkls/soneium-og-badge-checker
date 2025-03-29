@@ -82,7 +82,7 @@ def get_balance():
             amount = nft_contract.functions.balanceOf(wallet_address, token_id).call()
             if amount > 0:
                 logger.success(f"{wallet} | Soneium OG Badge was found on the wallet")
-                write_wallet_with_badge(f"{wallet}")
+                write_wallet_with_badge(source_data[wallet])
                 success_wallets += 1
             else:
                 logger.info(f"{wallet} | Current address doesn't hold this nft")
