@@ -45,6 +45,7 @@ erc1155_abi = [
 
 nft_contract = w3.eth.contract(address=w3.to_checksum_address(nft_contract_address), abi=erc1155_abi)
 
+source_data = {}
 for line in WALLETS.readlines():
     if line.strip():
         line = line.strip()
@@ -55,8 +56,10 @@ for line in WALLETS.readlines():
         if len(line) > 50:
             recipient_address = w3.eth.account.from_key(line).address
             WALLETS_TO_GET_BALANCE.append(recipient_address)
+            source_data[recipient_address] = line
         else:
             WALLETS_TO_GET_BALANCE.append(line)
+            source_data[line] = line
 
 def write_failed_wallet(address: str):
     with open('failed.txt', 'a', encoding="utf-8") as f:
@@ -83,11 +86,11 @@ def get_balance():
                 success_wallets += 1
             else:
                 logger.info(f"{wallet} | Current address doesn't hold this nft")
-                write_wallet_without_badge(wallet)
+                write_wallet_without_badge(source_data[wallet])
         except Exception as e:
             print(e)
             logger.error(f"{wallet} | Error while receiving the balance")
-            write_failed_wallet(wallet)
+            write_failed_wallet(source_data[wallet])
 
 
     logger.success(f"Total hold: {success_wallets}/{len(WALLETS_TO_GET_BALANCE)}")
